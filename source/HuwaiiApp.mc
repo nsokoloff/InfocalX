@@ -18,19 +18,19 @@ var gLocationLng = null;
 var centerX;
 var centerY;
 
-hidden function degreesToRadians(degrees) {
+function degreesToRadians(degrees) {
 	return degrees * Math.PI / 180;
 }  
 
-hidden function radiansToDegrees(radians) {
+function radiansToDegrees(radians) {
 	return radians * 180 / Math.PI;
 }  
 
-hidden function convertCoorX(radians, radius) {
+function convertCoorX(radians, radius) {
 	return centerX + radius*Math.cos(radians);
 }
 
-hidden function convertCoorY(radians, radius) {
+function convertCoorY(radians, radius) {
 	return centerY + radius*Math.sin(radians);
 }
 
@@ -79,11 +79,20 @@ class HuwaiiApp extends Application.AppBase {
     // Return the initial view of your application here
     function getInitialView() {
     	mView = new HuwaiiView();
+    	if (Toybox has :Complications) {
+    		// touch support: tapping a data field opens the app behind it
+    		return [mView, new HuwaiiDelegate()];
+    	}
         return [mView];
     }
 
 	function getView() {
 		return mView;
+	}
+
+	// On-watch settings (the "Customize" entry of the watch face)
+	function getSettingsView() {
+		return [buildSettingsMenu(), new SettingsMenuDelegate()];
 	}
 
 	function onSettingsChanged() { // triggered by settings change in GCM
@@ -227,9 +236,9 @@ class HuwaiiApp extends Application.AppBase {
 				var day_of_weak = date.day_of_week;
 				return Lang.format("$1$ $2$",[days[day_of_weak], date.day.format("%d")]);
 			} else {
-				var date = Date.info(now, Time.FORMAT_LONG);
-				var day_of_weak = date.day_of_week;
-				return Lang.format("$1$ $2$",[day_of_weak.toUpper(), date.day.format("%d")]);
+				var date_l = Date.info(now, Time.FORMAT_LONG);
+				var day_of_weak = date_l.day_of_week;
+				return Lang.format("$1$ $2$",[day_of_weak.toUpper(), date_l.day.format("%d")]);
 			}
 		} else if (date_formater == 1) {
 			// dd/mm
@@ -257,9 +266,9 @@ class HuwaiiApp extends Application.AppBase {
 				day = date.day;
 				month = months[date.month];
 			} else {
-				var date = Date.info(now, Time.FORMAT_MEDIUM);
-				day = date.day;
-				month = months[date.month];
+				var date_m = Date.info(now, Time.FORMAT_MEDIUM);
+				day = date_m.day;
+				month = months[date_m.month];
 			}
 			if (date_formater == 5) {
 				return Lang.format("$1$ $2$",[day.format("%d"), month]);

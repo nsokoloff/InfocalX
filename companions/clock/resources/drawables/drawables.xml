@@ -1,0 +1,4 @@
+<drawables>
+    <bitmap id="LauncherIcon" filename="icon.png" />
+    <bitmap id="iconComp" filename="comp.svg" />
+</drawables>

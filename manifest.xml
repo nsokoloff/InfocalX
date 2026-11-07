@@ -18,6 +18,8 @@
             <iq:product id="fenix6s"/>
             <iq:product id="fenix6spro"/>
             <iq:product id="fenix6xpro"/>
+            <iq:product id="fenix7pro"/>
+            <iq:product id="fenix7pronowifi"/>
             <iq:product id="fenixchronos"/>
             <iq:product id="fr245"/>
             <iq:product id="fr245m"/>
@@ -49,6 +51,7 @@
         <iq:permissions>
             <iq:uses-permission id="Background"/>
             <iq:uses-permission id="Communications"/>
+            <iq:uses-permission id="ComplicationSubscriber"/>
             <iq:uses-permission id="Positioning"/>
             <iq:uses-permission id="SensorHistory"/>
             <iq:uses-permission id="UserProfile"/>

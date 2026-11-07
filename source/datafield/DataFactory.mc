@@ -789,7 +789,7 @@ class GroupNotiField extends BaseDataField {
 	
 	function cur_label(value) {
 		var settings = Sys.getDeviceSettings();
-		var value = settings.alarmCount;
+		value = settings.alarmCount;
 		var alarm_str = Lang.format("A$1$",[value.format("%d")]);
 		value = settings.notificationCount;
 		var noti_str = Lang.format("N$1$",[value.format("%d")]);
@@ -866,7 +866,7 @@ class SunField extends BaseDataField {
 	
 	function cur_label(value) {
 		if (gLocationLat != null) {
-			var value = "";
+			value = "";
 			var nextSunEvent = 0;
 			var isSunriseNext = false;
 			var now = Date.info(Time.now(), Time.FORMAT_SHORT);
@@ -1097,7 +1097,7 @@ class TemparatureField extends BaseDataField {
 	
 	function cur_label(value) {
 		var need_minimal = App.getApp().getProperty("minimal_data");
-		var value = 0;
+		value = 0;
 		var settings = Sys.getDeviceSettings();
 		if ((Toybox has :SensorHistory) && (Toybox.SensorHistory has :getTemperatureHistory)) {
 			var sample = SensorHistory.getTemperatureHistory(null).next();
@@ -1145,7 +1145,7 @@ class AltitudeField extends BaseDataField {
 	
 	function cur_label(value) {
 		var need_minimal = App.getApp().getProperty("minimal_data");
-		var value = 0;
+		value = 0;
 		// #67 Try to retrieve altitude from current activity, before falling back on elevation history.
 		// Note that Activity::Info.altitude is supported by CIQ 1.x, but elevation history only on select CIQ 2.x
 		// devices.
@@ -1207,7 +1207,7 @@ class AlarmField extends BaseDataField {
 	
 	function cur_label(value) {
 		var settings = Sys.getDeviceSettings();
-		var value = settings.alarmCount;
+		value = settings.alarmCount;
 		return Lang.format("ALAR $1$",[value.format("%d")]);
 	}
 }
@@ -1228,7 +1228,7 @@ class NotifyField extends BaseDataField {
 	
 	function cur_label(value) {
 		var settings = Sys.getDeviceSettings();
-		var value = settings.notificationCount;
+		value = settings.notificationCount;
 		return Lang.format("NOTIF $1$",[value.format("%d")]);
 	}
 }
@@ -1351,7 +1351,7 @@ class DistanceField extends BaseDataField {
 	}
 	
 	function max_label(value) {
-		var value = value/1000.0;
+		value = value/1000.0;
 		value = value/100.0; // convert cm to km
     	var valKp = App.getApp().toKValue(value);
     	return Lang.format("$1$K",[valKp]);
@@ -1413,14 +1413,9 @@ class CaloField extends BaseDataField {
 	}
 	
 	function cur_label(value) {
+		// active calories only (total burned calories include resting energy)
 		var activeCalories = active_calories(value);
-		var need_minimal = App.getApp().getProperty("minimal_data");
-		if (need_minimal) {
-			return Lang.format("$1$-$2$",[value.format("%d"), activeCalories.format("%d")]);
-		} else {
-    		var valKp = App.getApp().toKValue(value);
-	    	return Lang.format("$1$K-$2$",[valKp, activeCalories.format("%d")]);
-    	}
+		return Lang.format("CAL $1$",[activeCalories.format("%d")]);
 	}
 	
 	function active_calories(value) {
@@ -1576,41 +1571,12 @@ class BatteryField extends BaseDataField {
 	
 	function cur_label(value) {
 		var battery_format = App.getApp().getProperty("battery_format");
-		var hour_consumtion = last_hour_consumtion;
-		if (hour_consumtion <= 0) {
-			var consumtion_history = App.getApp().getProperty("consumtion_history");
-			if (consumtion_history != null) {
-				var total = 0.0;
-				for( var i = 0; i < consumtion_history.size(); i++ ) {
-				    // Code to do in a loop
-				    total += consumtion_history[i];
-				}
-				hour_consumtion = total/consumtion_history.size();
-//				System.println("hour_consumtion");
-//				System.println(hour_consumtion);
-			} else {
-				var hour_consumtion_saved = App.getApp().getProperty("last_hour_consumtion");
-				if (hour_consumtion_saved != null) {
-					hour_consumtion = hour_consumtion_saved;
-				}
-			}
+		var stats = Sys.getSystemStats();
+		if (battery_format == 1 && stats has :batteryInDays && stats.batteryInDays != null) {
+			// remaining battery life as estimated by the watch itself
+			return Lang.format("$1$ DAYS",[stats.batteryInDays.format("%0.1f")]);
 		}
-		hour_consumtion = hour_consumtion.toFloat();
-		
-//		System.println(hour_consumtion);
-		
-		if (battery_format == 0 || hour_consumtion == -1) {
-			// show percent
-			return Lang.format("BAT $1$%",[Math.round(value).format("%d")]);
-		} else {
-			// System.println("" + value + " " + last_hour_consumtion);
-			if (hour_consumtion == 0) {
-				return Lang.format("$1$ DAYS",[99]);
-			}
-			var hour_left = value/(hour_consumtion*1.0);
-			var day_left = hour_left/(24.0); 
-			return Lang.format("$1$ DAYS",[day_left.format("%0.1f")]);
-		}
+		return Lang.format("BAT $1$%",[Math.round(value).format("%d")]);
 	}
 	
 	function bar_data() {
